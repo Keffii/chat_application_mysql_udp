@@ -19,6 +19,7 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
     private boolean connected = false;
     private String username;
     private ChatRoom chatRoom = new ChatRoom();
+    private ChatDatabase database;
     private ChatMulticastReceiver receiver;
     private ChatMulticastSender sender;
     private ConnectionPanel connectionPanel;
@@ -29,8 +30,19 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
     public ChatGUI() {
         setupFrame();
         setupUI();
+        initializeDatabase();
         initializeNetwork();
         setVisible(true);
+    }
+
+    private void initializeDatabase() {
+        try {
+            database = new ChatDatabase();
+            chatArea.append("Database ansluten\n");
+        } catch (Exception e) {
+            chatArea.append("Fel vid initiering av databasen: " + e.getMessage() + "\n");
+            database = null;
+        }
     }
 
     private void setupFrame() {
@@ -118,6 +130,10 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
             chatArea.append("Error closing resources: " + ex.getMessage() + "\n");
         }
 
+        if (database != null) {
+            database.close();
+        }
+
         System.exit(0);
     }
 
@@ -133,6 +149,9 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
 
             // Add self and update UserList
             chatRoom.addUser(username);
+            if (database != null) {
+                database.addUser(username);
+            }
             updateUserList();
 
             if (sender != null) {
@@ -167,6 +186,9 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
 
             // Clean chat and update UserList
             chatRoom = new ChatRoom();
+            if (database != null) {
+                database.removeUser(username);
+            }
             updateUserList();
 
             chatArea.append("Frånkopplad från chatten\n");
@@ -213,11 +235,19 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
         return chatRoom;
     }
 
+    // Expose database for persistence operations (may be null if DB init failed)
+    public ChatDatabase getDatabase() {
+        return database;
+    }
+
     // ChatEventListener
     @Override
     public void onUserJoined(String username) {
         chatRoom.addUser(username);
         chatArea.append("User " + username + " har anslutit till chatten\n");
+        if (database != null) {
+            database.addUser(username);
+        }
         updateUserList();
     }
 
@@ -225,6 +255,9 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
     public void onUserLeft(String username) {
         chatRoom.removeUser(username);
         chatArea.append("User " + username + " har lämnat chatten\n");
+        if (database != null) {
+            database.removeUser(username);
+        }
         updateUserList();
     }
 
@@ -232,5 +265,8 @@ public class ChatGUI extends JFrame implements ActionListener, ChatEventListener
     public void onMessageReceived(String sender, String message) {
         String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         chatArea.append("[" + timeStamp + "] " + sender + ": " + message + "\n");
+        if (database != null) {
+            database.saveMessage(sender, message);
+        }
     }
 }

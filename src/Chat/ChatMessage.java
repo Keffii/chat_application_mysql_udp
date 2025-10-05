@@ -18,6 +18,14 @@ public class ChatMessage {
         try {
             ChatMulticastSender sender = gui.getSender();
             sender.sendChatMessage(gui.getUsername(), message);
+            // Persist outgoing message if DB is available
+            try {
+                if (gui != null && gui.getDatabase() != null) {
+                    gui.getDatabase().saveMessage(gui.getUsername(), message);
+                }
+            } catch (Exception ignored) {
+                // DB errors should not prevent sending
+            }
             gui.getChatInput().setText("");
         } catch (IOException e) {
             gui.getChatArea().append("Error sending message: " + e.getMessage() + "\n");
