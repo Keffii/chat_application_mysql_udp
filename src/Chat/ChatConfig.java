@@ -14,7 +14,7 @@ public class ChatConfig {
 
     // Database configuration (MySQL)
     // Update these values to match your MySQL server and credentials.
-    public static final String DB_URL = "jdbc:mysql://localhost:3306/chat_db?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
-    public static final String DB_USER = "root";
-    public static final String DB_PASS = "mysql";
+    public static final String DB_URL = "jdbc:mysql://localhost:3306/DATABASE?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
+    public static final String DB_USER = "USERNAME";
+    public static final String DB_PASS = "PASSWORD";
 }
