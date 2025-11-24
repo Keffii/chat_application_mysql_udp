@@ -17,13 +17,13 @@ public class ConnectionPanel {
         JPanel connectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JLabel nameLabel = new JLabel("Användarnamn:");
+        JLabel nameLabel = new JLabel("Username:");
         usernameField = new JTextField(15);
-        usernameField.setText("Chattare" + new Random().nextInt(100));
-        connectButton = new JButton("Anslut");
-        disconnectButton = new JButton("Koppla från");
+        usernameField.setText("User" + new Random().nextInt(100));
+        connectButton = new JButton("Connect");
+        disconnectButton = new JButton("Disconnect");
         disconnectButton.setEnabled(false);
-        exitButton = new JButton("Koppla ner");
+        exitButton = new JButton("Shutdown");
 
         connectionPanel.add(nameLabel);
         connectionPanel.add(usernameField);
